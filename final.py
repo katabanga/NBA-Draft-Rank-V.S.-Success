@@ -34,17 +34,17 @@ def draft_analzyer():
     # Concatenate all the dataframes into one
     df = pd.concat(df_lists, ignore_index=True)
 
-    # model_1 = LinearRegression()
-    # model_1.fit(df['Pk'].values.reshape(-1, 1), df['VORP'])
-    # y_pred_1 = model_1.predict(df['Pk'].values.reshape(-1, 1))
-    # plt.plot(df['Pk'], y_pred_1, color='red')
+    model_1 = LinearRegression()
+    model_1.fit(df['Pk'].values.reshape(-1, 1), df['VORP'])
+    y_pred_1 = model_1.predict(df['Pk'].values.reshape(-1, 1))
+    plt.plot(df['Pk'], y_pred_1, color='red')
 
-    model_ws = sm.formula.ols('VORP ~ Pk', data=df).fit()
-    model_vorp = sm.formula.ols('WS/48 ~ Pk', data=df).fit()
-    print(model_ws.summary())
-    print(model_vorp.summary())
-    print('WS/48 p-value:', model_ws.pvalues['Pk'])
-    print('VORP p-value:', model_vorp.pvalues['Pk'])
+    # model_ws = sm.formula.ols('VORP ~ Pk', data=df).fit()
+    # model_vorp = sm.formula.ols('WS/48 ~ Pk', data=df).fit()
+    # print(model_ws.summary())
+    # print(model_vorp.summary())
+    # print('WS/48 p-value:', model_ws.pvalues['Pk'])
+    # print('VORP p-value:', model_vorp.pvalues['Pk'])
     
     plt.scatter(df['Pk'], df['VORP'], alpha=0.5)
     plt.xlabel("Draft Pick")
@@ -84,58 +84,11 @@ def draft_analzyer():
     # Print the p-value
     print('VORP p-value:', vorp_ttest.pvalue)
 
-    # print(grouped)
-
-def season_file_reader(season_lists):
-    for file in season_lists:
-        df = pd.read_csv(file)
-        clean_season_data(df)
-
-def clean_season_data(df):
-    # check if the player occurs in the df multiple times, take the first occurence
-    df = df.drop_duplicates(subset=['Player'], keep='first')
-    df_season_lists.append(df)
-
-def form_player_growth():
-    # read the draft dataset
-    draft_df = pd.concat(df_lists, ignore_index=True)
-
-    # read the performance dataset
-    performance_df = pd.concat(df_season_lists, ignore_index=True)
-
-    # merge the datasets based on player names
-    merged_df = pd.merge(draft_df, performance_df, on='Player', how='outer')
-    print(draft_df)
-    player_dict = {}
-
-    for index, row in merged_df.iterrows():
-        # get the player name
-        player_name = row['Player']
-        
-        # check if the player is in the draft
-        if player_name in draft_df['Player'].values:
-            # create a new entry in the dictionary for the player
-            if player_name not in player_dict:
-                player_dict[player_name] = []
-            
-            # add the player's performance for the season
-            # print( player_dict[player_name])
-            if not math.isnan(row['PTS_x']):
-                continue
-            else:
-                player_dict[player_name].append(row['PTS_y'])
-            # player_dict[player_name]['AST'] += row['AST']
-            # player_dict[player_name]['TRB'] += row['TRB']
-    return player_dict
-
+    print(grouped)
 
 
 draft_file_reader(file_list)  
 draft_analzyer()
-
-season_file_reader(season_lists)
-print(form_player_growth())
-   
 
 
     
